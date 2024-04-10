@@ -102,4 +102,10 @@ class UserController
         }
 
     }
+
+    public function logout(ServerRequest $request)
+    {
+        AuthService::logout();
+        return new RedirectResponse('/');
+    }
 }

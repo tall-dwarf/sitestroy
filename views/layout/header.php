@@ -45,6 +45,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" aria-current="page" href="/profile">Профиль</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="/user/logout">Выйти из системы</a>
+                            </li>
                         <?php endif; ?>
                     </ul>
                 </div>

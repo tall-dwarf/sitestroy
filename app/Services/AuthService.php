@@ -52,6 +52,14 @@ class AuthService
 
         $user = new User();
         return $user->getItem('token', $token);
+    }
 
+    /**
+     * Выход пользователя из системы
+     * @return void
+     */
+    public static function logout(): void
+    {
+        setcookie('token', '', -10, '/', '', false, true);
     }
 }

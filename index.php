@@ -29,6 +29,7 @@ $router->get('/user/login', [UserController::class, 'loginPage']);
 $router->get('/user/register', [UserController::class, 'registerPage']);
 $router->post('/user/register', [UserController::class, 'register']);
 
+$router->get('/user/logout', [UserController::class, 'logout']);
 
 $router->group(['middleware' => [AuthMiddleware::class]], function(Router $router) {
     $router->patch('/to-do-list', [ToDoListController::class, 'toggle']);
@@ -37,8 +38,6 @@ $router->group(['middleware' => [AuthMiddleware::class]], function(Router $route
 
     $router->get('/profile', [ProfileController::class, 'profilePage']);
 });
-
-
 
 $router->group(['middleware' => [AuthMiddleware::class, AdminMiddleware::class]], function(Router $router) {
     $router->patch('/admin/to-do-list', [AdminController::class, 'changeTodo']);
