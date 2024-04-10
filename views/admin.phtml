@@ -1,0 +1,74 @@
+<?php require_once __DIR__ . "/layout/header.php" ?>
+
+
+<div class="container">
+    <?php foreach ($users as $user): ?>
+        <div class="row">
+            <h2><?= $user['email'] ?></h2>
+            <div class="col-md-12">
+                <div class="card card-white">
+                    <div class="card-body">
+                        <form data-form="todo" id="todo-form" class="d-flex gap-2">
+                            <input name="text" id="todo-text" type="text" class="form-control add-task" placeholder="Новая задача">
+                            <input name="userId" hidden="hidden" value="<?= $user['id'] ?>" type="text">
+                            <button class="btn btn-primary">добавить</button>
+                        </form>
+                        <div class="todo-list">
+                            <?php foreach ($user['todos'] as $item): ?>
+                                <div id="todo-item-<?= $item['id'] ?>" class="todo-item">
+
+                                    <input data-change="<?= $item['id'] ?>"
+                                           class="form-check-input"
+                                           type="checkbox"
+                                           id="todo-checkbox<?= $item['id'] ?>"
+                                            <?= $item['completed'] ? "checked" : '' ?>>
+
+                                    <label for="todo-checkbox<?= $item['id'] ?>"><?= $item['text'] ?></label>
+                                    <button data-delete="<?= $item['id'] ?>" class="float-right btn btn-danger">Удалить</button>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+
+
+<script>
+    const deleteTodo = async (todoId) => {
+        await axios.delete('/admin/to-do-list', {data: {todoId}})
+    }
+
+    const toggleTodo = async (todoId, value) => {
+        await axios.patch('/admin/to-do-list', {todoId, value})
+    }
+
+    const createTodo = async (formData) => {
+        await axios.post('/admin/to-do-list', formData)
+    }
+
+</script>
+
+
+<script>
+    document.addEventListener("submit", (event) => {
+        event.preventDefault()
+        if(event.target.dataset.form && event.target.dataset.form === "todo"){
+            createTodo(event.target).then(() => location.reload())
+        }
+    })
+
+    document.addEventListener('click', (event) => {
+
+        if(event.target.dataset.change){
+            toggleTodo(Number(event.target.dataset.change), event.target.checked)
+        }
+
+        if(event.target.dataset.delete){
+            deleteTodo(Number(event.target.dataset.delete))
+                .then(() => location.reload())
+        }
+    })
+</script>

@@ -1,0 +1,15 @@
+{
+    "require": {
+        "miladrahimi/phprouter": "^5.1",
+        "nilportugues/sql-query-builder": "^1.8",
+        "hemiframe/php-query-builder": "^2.0",
+      "ext-pdo": "*",
+        "symfony/validator": "^6.4"
+    },
+    
+    "autoload": {
+        "psr-4": {
+            "SiteStroy\\": "app"
+        }
+    }
+}

@@ -1,0 +1,101 @@
+<?php require_once __DIR__ . "/layout/header.php" ?>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-white">
+                <div class="card-body">
+                    <form id="todo-form" class="d-flex gap-2">
+                        <input name="text" id="todo-text" type="text" class="form-control add-task" placeholder="Новая задача">
+                        <button class="btn btn-primary">добавить</button>
+                    </form>
+                    <div class="todo-list">
+                        <?php foreach ($list as $item): ?>
+                            <div id="todo-item-<?= $item['id'] ?>" class="todo-item">
+                                <input data-change="<?= $item['id'] ?>"
+                                       class="form-check-input"
+                                       type="checkbox"
+                                       id="todo-checkbox<?= $item['id'] ?>"
+                                    <?= $item['completed'] ? "checked" : '' ?>>
+
+                                <label for="todo-checkbox<?= $item['id'] ?>"><?= $item['text'] ?></label>
+                                <button data-delete="<?= $item['id'] ?>" class="float-right btn btn-danger">Удалить</button>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    const createTodoHtml = (id, text) => {
+        const element = `
+                                    <div id="todo-item-${id}" class="todo-item">
+                                <input data-change="${id}"
+                                       class="form-check-input"
+                                       type="checkbox"
+                                       id="todo-checkbox${id}">
+
+                                <label for="todo-checkbox${id}">${text}</label>
+                                <button data-delete="${id}" class="float-right btn btn-danger">Удалить</button>
+                            </div>
+        `
+        return element
+    }
+
+</script>
+
+<!--API TODO_LIST-->
+<script>
+    const deleteTodo = async (todoId) => {
+        await axios.delete('/to-do-list', {data: {todoId}})
+        const element = document.querySelector(`#todo-item-${todoId}`)
+        element.remove()
+    }
+
+    const createTodo = async (data) => {
+        if(data.text.value.length === 0) return null
+        const response = await axios.post('/to-do-list', data)
+
+        const todoList = document.querySelector(".todo-list")
+        const newTodo = createTodoHtml(response.data.todoId, data.text.value)
+        todoList.innerHTML += newTodo
+    }
+
+    const updateTodoStatus = async (todoId, value) => {
+        await axios.patch('/to-do-list', {todoId, value})
+    }
+
+</script>
+
+<!--TODO EVENTS-->
+<script>
+
+    document.querySelector("#todo-form").addEventListener("submit", async (event) => {
+        event.preventDefault()
+        createTodo(event.currentTarget)
+            .then(() => event.target.text.value = '')
+            .catch(() => modal.open('error', 'Ошибка создания записи'))
+    })
+
+    document.addEventListener('click', (event) => {
+
+        if(event.target.dataset.change){
+            updateTodoStatus(Number(event.target.dataset.change), event.target.checked)
+                .catch(() => modal.open('error', 'Ошибка обновления статуса записи'))
+        }
+
+        if(event.target.dataset.delete){
+            deleteTodo(Number(event.target.dataset.delete))
+                .catch(() => modal.open('error', 'Ошибка удаления записи'))
+        }
+    })
+
+</script>
+
+</body>
+</html>
